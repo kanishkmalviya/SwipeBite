@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.swipebite.restaurant.exception.ResourceNotFoundException;
+import com.swipebite.restaurant.exception.DuplicateResourceException;
 import com.swipebite.restaurant.entity.Restaurant;
 import com.swipebite.restaurant.entity.RestaurantHours;
 import com.swipebite.restaurant.repository.RestaurantHoursRepository;
@@ -27,14 +29,14 @@ public class RestaurantHoursService {
     public RestaurantHours addHours(Long restaurantId, RestaurantHours hours) {
 
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RuntimeException("Restaurant not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
 
         boolean alreadyExists = hoursRepository.findByRestaurant_Id(restaurantId)
                 .stream()
                 .anyMatch(existing -> existing.getDayOfWeek() == hours.getDayOfWeek());
 
         if (alreadyExists) {
-            throw new RuntimeException("Hours already exist for this day");
+            throw new DuplicateResourceException("Hours already exist for this day");
         }
 
         hours.setRestaurant(restaurant);
@@ -45,7 +47,7 @@ public class RestaurantHoursService {
     public List<RestaurantHours> getHours(Long restaurantId) {
 
         if (!restaurantRepository.existsById(restaurantId)) {
-            throw new RuntimeException("Restaurant not found");
+            throw new ResourceNotFoundException("Restaurant not found");
         }
 
         return hoursRepository.findByRestaurant_Id(restaurantId);
@@ -58,7 +60,7 @@ public class RestaurantHoursService {
                 .orElseThrow(() -> new RuntimeException("Hours not found"));
 
         if (!hours.getRestaurant().getId().equals(restaurantId)) {
-            throw new RuntimeException("Hours do not belong to this restaurant");
+            throw new ResourceNotFoundException("Hours do not belong to this restaurant");
         }
 
         boolean duplicateDay = hoursRepository.findByRestaurant_Id(restaurantId)
@@ -68,7 +70,7 @@ public class RestaurantHoursService {
                         && existing.getDayOfWeek() == updatedHours.getDayOfWeek());
 
         if (duplicateDay) {
-            throw new RuntimeException("Hours already exist for this day");
+            throw new DuplicateResourceException("Hours already exist for this day");
         }
 
         hours.setDayOfWeek(updatedHours.getDayOfWeek());

@@ -5,26 +5,38 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.swipebite.restaurant.exception.ResourceNotFoundException;
+import com.swipebite.restaurant.exception.DuplicateResourceException;
 import com.swipebite.restaurant.entity.Restaurant;
+import com.swipebite.restaurant.repository.RestaurantAddressRepository;
+import com.swipebite.restaurant.repository.RestaurantHoursRepository;
 import com.swipebite.restaurant.repository.RestaurantRepository;
 
 @Service
 public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantAddressRepository addressRepository;
+    private final RestaurantHoursRepository hoursRepository;
 
-    public RestaurantService(RestaurantRepository restaurantRepository) {
+    public RestaurantService(
+            RestaurantRepository restaurantRepository,
+            RestaurantAddressRepository addressRepository,
+            RestaurantHoursRepository hoursRepository) {
+
         this.restaurantRepository = restaurantRepository;
+        this.addressRepository = addressRepository;
+        this.hoursRepository = hoursRepository;
     }
 
     public Restaurant registerRestaurant(Restaurant restaurant) {
 
         if (restaurantRepository.existsByEmail(restaurant.getEmail())) {
-            throw new RuntimeException("Restaurant email already exists");
+            throw new DuplicateResourceException("Restaurant email already exists");
         }
 
         if (restaurantRepository.existsByPhoneNumber(restaurant.getPhoneNumber())) {
-            throw new RuntimeException("Restaurant phone number already exists");
+            throw  new DuplicateResourceException("Restaurant phone number already exists");
         }
 
         restaurant.setStatus("PENDING");
@@ -33,8 +45,9 @@ public class RestaurantService {
     }
 
     public Restaurant getRestaurantById(Long id) {
+
         return restaurantRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Restaurant not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
     }
 
     public List<Restaurant> getAllRestaurants() {
@@ -47,12 +60,12 @@ public class RestaurantService {
 
         if (!restaurant.getEmail().equals(updatedRestaurant.getEmail())
                 && restaurantRepository.existsByEmail(updatedRestaurant.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new DuplicateResourceException("Email already exists");
         }
 
         if (!restaurant.getPhoneNumber().equals(updatedRestaurant.getPhoneNumber())
                 && restaurantRepository.existsByPhoneNumber(updatedRestaurant.getPhoneNumber())) {
-            throw new RuntimeException("Phone number already exists");
+        throw 	new DuplicateResourceException("Phone number already exists");  
         }
 
         restaurant.setRestaurantName(updatedRestaurant.getRestaurantName());
@@ -65,7 +78,12 @@ public class RestaurantService {
     }
 
     public void deleteRestaurant(Long id) {
+
         Restaurant restaurant = getRestaurantById(id);
+
+        addressRepository.deleteByRestaurant_Id(id);
+        hoursRepository.deleteByRestaurant_Id(id);
+
         restaurantRepository.delete(restaurant);
     }
 }

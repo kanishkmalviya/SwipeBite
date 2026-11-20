@@ -48,7 +48,7 @@ public class RestaurantHoursController {
             @PathVariable Long restaurantId) {
 
         List<RestaurantHoursResponse> response =
-                hoursService.getRestaurantHours(restaurantId)
+                hoursService.getHours(restaurantId)
                 .stream()
                 .map(hoursMapper::toResponse)
                 .collect(Collectors.toList());

@@ -9,5 +9,7 @@ import com.swipebite.restaurant.entity.RestaurantAddress;
 public interface RestaurantAddressRepository extends JpaRepository<RestaurantAddress, Long> {
 
     Optional<RestaurantAddress> findByRestaurant_Id(Long restaurantId);
+    void deleteByRestaurant_Id(Long restaurantId);
 
 }
+

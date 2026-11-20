@@ -3,6 +3,9 @@ package com.swipebite.restaurant.service;
 
 import org.springframework.stereotype.Service;
 
+import com.swipebite.restaurant.exception.ResourceNotFoundException;
+import com.swipebite.restaurant.exception.DuplicateResourceException;
+
 import com.swipebite.restaurant.entity.Restaurant;
 import com.swipebite.restaurant.entity.RestaurantAddress;
 import com.swipebite.restaurant.repository.RestaurantAddressRepository;
@@ -25,10 +28,10 @@ public class RestaurantAddressService {
     public RestaurantAddress addAddress(Long restaurantId, RestaurantAddress address) {
 
         Restaurant restaurant = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new RuntimeException("Restaurant not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
 
         if (addressRepository.findByRestaurant_Id(restaurantId).isPresent()) {
-            throw new RuntimeException("Address already exists for this restaurant");
+            throw new DuplicateResourceException("Address already exists for this restaurant");
         }
 
         address.setRestaurant(restaurant);
@@ -39,7 +42,7 @@ public class RestaurantAddressService {
     public RestaurantAddress getAddress(Long restaurantId) {
 
         return addressRepository.findByRestaurant_Id(restaurantId)
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found"));
     }
 
     public RestaurantAddress updateAddress(Long restaurantId, RestaurantAddress updatedAddress) {
