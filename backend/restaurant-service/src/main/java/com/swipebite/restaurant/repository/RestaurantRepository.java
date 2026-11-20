@@ -1,5 +1,13 @@
+
 package com.swipebite.restaurant.repository;
 
-public interface RestaurantRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.swipebite.restaurant.entity.Restaurant;
+
+public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
+
+    boolean existsByEmail(String email);
+
+    boolean existsByPhoneNumber(String phoneNumber);
 
 }

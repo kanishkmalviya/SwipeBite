@@ -1,5 +1,13 @@
+
 package com.swipebite.restaurant.repository;
 
-public interface RestaurantHoursRepository {
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.swipebite.restaurant.entity.RestaurantHours;
+
+public interface RestaurantHoursRepository extends JpaRepository<RestaurantHours, Long> {
+
+    List<RestaurantHours> findByRestaurant_Id(Long restaurantId);
 
 }
