@@ -1,6 +1,6 @@
 
 package com.swipebite.user.service;
-
+import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.swipebite.user.entity.User;
@@ -26,6 +26,10 @@ public class UserService {
         }
 
         return userRepository.save(user);
+    }
+    
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     public User getUserById(Long id) {

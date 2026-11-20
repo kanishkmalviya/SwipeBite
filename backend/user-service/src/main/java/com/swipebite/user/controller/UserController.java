@@ -1,6 +1,8 @@
 
 package com.swipebite.user.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,6 +48,17 @@ public class UserController {
         return new ResponseEntity<>(
                 userMapper.toResponse(savedUser),
                 HttpStatus.CREATED);
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+
+        List<UserResponse> users = userService.getAllUsers()
+                .stream()
+                .map(userMapper::toResponse)
+                .toList();
+
+        return ResponseEntity.ok(users);
     }
 
     // Get Customer Profile
