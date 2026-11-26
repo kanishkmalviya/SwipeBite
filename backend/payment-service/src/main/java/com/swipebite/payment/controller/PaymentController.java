@@ -20,6 +20,7 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
+        
     @PostMapping
     public ResponseEntity<PaymentResponse> createPayment(
             @RequestBody PaymentRequest request) {
@@ -52,7 +53,7 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> updatePaymentStatus(
             @PathVariable Long id,
             @RequestParam String status) {
-
+    	System.out.println("UPDATE PAYMENT API HIT");
         return ResponseEntity.ok(paymentService.updatePaymentStatus(id, status));
     }
 }

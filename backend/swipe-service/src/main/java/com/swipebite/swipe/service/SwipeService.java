@@ -32,6 +32,7 @@ public class SwipeService {
     
     
 
+
 public SwipeResponse createSwipe(SwipeRequest request) {
 
     if (!"RIGHT".equalsIgnoreCase(request.getSwipeDirection())
@@ -41,6 +42,18 @@ public SwipeResponse createSwipe(SwipeRequest request) {
                 "Swipe direction must be RIGHT or LEFT");
     }
 
+    String direction = request.getSwipeDirection().toUpperCase();
+
+    // LEFT swipe - Do not save in database
+    if ("LEFT".equals(direction)) {
+
+        Swipe skippedSwipe = swipeMapper.toEntity(request);
+        skippedSwipe.setSwipeDirection("LEFT");
+
+        return swipeMapper.toResponse(skippedSwipe);
+    }
+
+    // RIGHT swipe - Prevent duplicate selection
     if (swipeRepository.existsByCustomerIdAndFoodId(
             request.getCustomerId(), request.getFoodId())) {
 
@@ -48,18 +61,18 @@ public SwipeResponse createSwipe(SwipeRequest request) {
                 "This food has already been swiped by this customer");
     }
 
+    // Save RIGHT swipe in database
     Swipe swipe = swipeMapper.toEntity(request);
-
-    swipe.setSwipeDirection(
-            request.getSwipeDirection().toUpperCase());
+    swipe.setSwipeDirection("RIGHT");
 
     Swipe savedSwipe = swipeRepository.save(swipe);
 
-    // Publish Kafka Event
+    // Publish Kafka event only for RIGHT swipe
     swipeEventPublisher.publishSwipeCreated(savedSwipe);
 
     return swipeMapper.toResponse(savedSwipe);
 }
+
     public SwipeResponse getSwipeById(Long id) {
 
         Swipe swipe = swipeRepository.findById(id)

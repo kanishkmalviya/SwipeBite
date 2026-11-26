@@ -37,11 +37,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                 .requestMatchers(
-                    "/api/auth/**",
-                    "/api/users/register"
-                ).permitAll()
-                .anyRequest().authenticated()
-            )
+                	    "/api/auth/**",
+                	    "/api/users/register",
+                	    "/api/users/register/restaurant",
+                	    "/api/users/register/delivery-partner"
+                	).permitAll() )
 
             .exceptionHandling(exception -> exception
                 .authenticationEntryPoint(

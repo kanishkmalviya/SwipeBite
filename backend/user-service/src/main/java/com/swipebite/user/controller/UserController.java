@@ -50,6 +50,45 @@ public class UserController {
                 HttpStatus.CREATED);
     }
     
+ // Restaurant Owner Registration
+    @PostMapping("/register/restaurant")
+    public ResponseEntity<UserResponse> registerRestaurantOwner(
+            @RequestBody UserRequest request) {
+
+        User user = userMapper.toEntity(request);
+
+        user.setPassword(
+                passwordEncoder.encode(request.getPassword()));
+
+        user.setRole("RESTAURANT");
+
+        User savedUser = userService.registerUser(user);
+
+        return new ResponseEntity<>(
+                userMapper.toResponse(savedUser),
+                HttpStatus.CREATED);
+    }
+
+
+    // Delivery Partner Registration
+    @PostMapping("/register/delivery-partner")
+    public ResponseEntity<UserResponse> registerDeliveryPartner(
+            @RequestBody UserRequest request) {
+
+        User user = userMapper.toEntity(request);
+
+        user.setPassword(
+                passwordEncoder.encode(request.getPassword()));
+
+        user.setRole("DELIVERY_PARTNER");
+
+        User savedUser = userService.registerUser(user);
+
+        return new ResponseEntity<>(
+                userMapper.toResponse(savedUser),
+                HttpStatus.CREATED);
+    }
+    
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {
 

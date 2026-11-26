@@ -16,8 +16,9 @@ public class PaymentEventPublisher {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    public PaymentEventPublisher(KafkaTemplate<String, String> kafkaTemplate,
-                                 ObjectMapper objectMapper) {
+    public PaymentEventPublisher(
+            KafkaTemplate<String, String> kafkaTemplate,
+            ObjectMapper objectMapper) {
         this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
     }
@@ -35,10 +36,25 @@ public class PaymentEventPublisher {
 
             String message = objectMapper.writeValueAsString(event);
 
-            kafkaTemplate.send(TOPIC, message);
+            kafkaTemplate.send(TOPIC, message)
+                .whenComplete((result, ex) -> {
+
+                    if (ex == null) {
+                        System.out.println(
+                            "PAYMENT EVENT PUBLISHED SUCCESSFULLY: "
+                            + message
+                        );
+                    } else {
+                        System.out.println(
+                            "PAYMENT EVENT FAILED: "
+                            + ex.getMessage()
+                        );
+                    }
+                });
 
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Unable to publish payment event", e);
+            throw new RuntimeException(
+                    "Unable to publish payment event", e);
         }
     }
 }

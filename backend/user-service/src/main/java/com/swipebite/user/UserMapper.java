@@ -1,4 +1,3 @@
-
 package com.swipebite.user;
 
 import org.springframework.stereotype.Component;
@@ -10,9 +9,13 @@ import com.swipebite.user.entity.User;
 @Component
 public class UserMapper {
 
-    // UserRequest to User Entity
-	
+    // Default Customer Registration
     public User toEntity(UserRequest request) {
+        return toEntity(request, "CUSTOMER");
+    }
+
+    // Registration with a fixed role
+    public User toEntity(UserRequest request, String role) {
 
         User user = new User();
 
@@ -20,14 +23,12 @@ public class UserMapper {
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
         user.setMobileNumber(request.getMobileNumber());
-
-        user.setRole("CUSTOMER");
+        user.setRole(role);
 
         return user;
     }
 
     // User Entity to UserResponse
-    
     public UserResponse toResponse(User user) {
 
         UserResponse response = new UserResponse();

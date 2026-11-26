@@ -37,7 +37,14 @@ public class SwipeEventPublisher {
 
         try {
             String message = objectMapper.writeValueAsString(event);
-            kafkaTemplate.send(TOPIC, message);
+            kafkaTemplate.send(TOPIC, message)
+            .whenComplete((result, ex) -> {
+                if (ex == null) {
+                    System.out.println("SWIPE EVENT PUBLISHED SUCCESSFULLY: " + message);
+                } else {
+                    System.out.println("SWIPE EVENT FAILED: " + ex.getMessage());
+                }
+            });
 
         } catch (JsonProcessingException e) {
             throw new RuntimeException(

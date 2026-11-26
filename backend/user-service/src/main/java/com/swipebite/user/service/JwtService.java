@@ -4,7 +4,9 @@ package com.swipebite.user.service;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
-
+import jakarta.annotation.PostConstruct;
+import java.security.MessageDigest;
+import java.util.HexFormat;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +41,18 @@ public class JwtService {
                 .signWith(getSigningKey())
                 .compact();
     }
+//fingerprint method
+    @PostConstruct
+    public void checkSecret() throws Exception {
+        byte[] hash = MessageDigest.getInstance("SHA-256")
+                .digest(secret.getBytes());
 
+        System.out.println("JWT SECRET FINGERPRINT: "
+                + HexFormat.of().formatHex(hash));
+    }
+    
+    
+    
     // Token se information read karna
     public Claims extractClaims(String token) {
 

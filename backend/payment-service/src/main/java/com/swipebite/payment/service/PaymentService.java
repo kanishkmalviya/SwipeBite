@@ -83,7 +83,7 @@ public PaymentService(PaymentRepository paymentRepository,
     }
 
     public PaymentResponse updatePaymentStatus(Long id, String status) {
-
+    	System.out.println("UPDATE PAYMENT SERVICE HIT");
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment not found"));
 
